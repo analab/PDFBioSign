@@ -22,43 +22,32 @@ public class AcroMaker {
 	static private double x_cord=0,y_cord=0;
 	static private String dest_path = "/storage/sdcard0/external_SD/AcroMaker.pdf";
 	
-	static public String PutAcros(String[] cord, String path) throws IOException, DocumentException{
+static void PutAcros( String src, String dest, String[] cord) throws IOException, DocumentException{
 		
 		String[] args;
-		PdfReader reader = new PdfReader(path);
-        FileOutputStream os = new FileOutputStream(dest_path);
-        Document document = new Document();
-        PdfWriter writer = PdfWriter.getInstance(document, os);
-        document.open();
+		PdfReader reader = new PdfReader(src);
         
-        PdfPTable table = new PdfPTable(2);
-        int n = reader.getNumberOfPages();
-        PdfImportedPage page;
-        for (int i = 1; i <= n; i++) {
-        page = writer.getImportedPage(reader, i);
-        	table.addCell(Image.getInstance(page));
-        }
-        document.add(table);
 		for(String tmp_str:cord){
 			args=tmp_str.split(":");
 			switch(args[2]){
 				case "sign" : {
-			      
-			        PdfFormField field = PdfFormField.createSignature(writer);
+			      PdfStamper stamper =new	PdfStamper(reader,new	FileOutputStream(dest));
+			      PdfFormField field = PdfFormField.createSignature(stamper.getWriter());
+							
 			        field.setWidget(new Rectangle( Float.parseFloat(args[0]), Float.parseFloat(args[1]),Float.parseFloat(args[0])+72, Float.parseFloat(args[1])+48), PdfAnnotation.HIGHLIGHT_INVERT);
 			        field.setFieldName(""+args[3]);
 			        field.setFlags(PdfAnnotation.FLAGS_PRINT);
 			        field.setPage();
 			        field.setMKBorderColor(BaseColor.BLACK);
 			        field.setMKBackgroundColor(BaseColor.WHITE);
-			        PdfAppearance tp = PdfAppearance.createAppearance(writer, 72, 48);
+			        PdfAppearance tp = PdfAppearance.createAppearance(stamper.getWriter(), 72, 48);
 			        tp.rectangle(0.5f, 0.5f, 71.5f, 47.5f);
 			        tp.stroke();
 			        field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
-			        writer.addAnnotation(field);
-			        
-			        
-			        
+			        stamper.addAnnotation(field, 1);
+					
+					stamper.close();
+			       break;
 				}
 				default:{
 					System.err.println("Unknown type.");
@@ -66,7 +55,6 @@ public class AcroMaker {
 			}
 		}
 		
-		document.close();
-		return dest_path;
+		//document.close();
 	}
 }
