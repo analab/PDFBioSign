@@ -3,22 +3,14 @@ package com.analab.pdfbiosign;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Point;
-import android.net.Uri;
+import android.graphics.*;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
 
-import com.artifex.mupdfdemo.FilePicker;
-import com.artifex.mupdfdemo.MuPDFActivity;
-import com.artifex.mupdfdemo.MuPDFCore;
-import com.artifex.mupdfdemo.MuPDFPageView;
+import com.artifex.mupdfdemo.*;
 
 public class MainActivity extends Activity {
 	private final String TAG ="PDFBioSign";
@@ -53,8 +45,16 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Creating view");
 		
-		View v = new PDFBioSignView(getBaseContext(), mPdfCore);
+		//View v = new PDFBioSignView(getBaseContext(), mPdfCore);
+		ListView v = new ListView(getBaseContext());
 		
+		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
+		
+		
+		/*Utility u = new Utility(mPdfCore);
+		u.search();*/
+		
+		//setContentView(R.layout.activity_main);
 		setContentView(v);
 		
 		//setContentView(new MuPDFPageView(getBaseContext(), null, mPdfCore, new Point(0,0), ));
@@ -85,6 +85,7 @@ public class MainActivity extends Activity {
 class PDFBioSignView extends View {
 	private static final String TAG = "PDFBioSign";
 	private MuPDFCore mCore; 
+	private Bitmap mBitmap;
 
 	public PDFBioSignView(Context context, MuPDFCore core) {
 		super(context);
@@ -98,15 +99,15 @@ class PDFBioSignView extends View {
 		
 		Log.d(TAG, "Creating bitmap");
 		
-		Bitmap myBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+		mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		
 		Log.d(TAG, "Drawing page");
 		
-		mCore.drawPage(myBitmap, mCore.countPages() - 1, w, h, 1, 1, w - 2, h - 2);
+		mCore.drawPage(mBitmap, mCore.countPages() - 1, w, h, 1, 1, w - 2, h - 2);
 		
 		Log.d(TAG, "Drawing bitmap");
 		
-		canvas.drawBitmap(myBitmap, 0, 0, null);
+		canvas.drawBitmap(mBitmap, 0, 0, null);
 	}
 	
 }
