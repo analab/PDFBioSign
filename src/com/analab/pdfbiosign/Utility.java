@@ -10,7 +10,6 @@ import com.artifex.mupdfdemo.TextWord;
 public class Utility {
 	private MuPDFCore mCore;
 	private final String TAG = "PDFBioSign:Utility";
-	private TextWord[][] words;
 	private int page = -1;
 	
 	public Utility(MuPDFCore core) {
@@ -33,10 +32,26 @@ public class Utility {
 	
 	
 	
-	public void search() {
-		RectF[] rs = mCore.searchPage(page, "{PDFBioSign");
+	public String[] search(String[] fields) {
+		RectF[][] rs = new RectF[fields.length][];
+		String[] ret;
+		int count = 0;
+		int i;
 		
-		for (RectF r : rs)
-			Log.d(TAG, "Got: " + r);
+		for (i = 0; i < fields.length; ++i) {
+			rs[i] = mCore.searchPage(page, fields[i]);
+			count += rs[i].length;
+		}
+		
+		i = 0;
+		ret = new String[count];
+		
+		for (int j = 0; j < fields.length; ++j) {
+			for (RectF rect : rs[i]) {
+				ret[i++] = "" + rect.left + ":" + rect.top + fields[j].substring(11, fields[j].length() - 1);
+				Log.d(TAG, "Got string: " + ret[i - 1]);
+			}
+		}
+		return ret;
 	}
 }

@@ -51,8 +51,10 @@ public class MainActivity extends Activity {
 		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
 		
 		
-		/*Utility u = new Utility(mPdfCore);
-		u.search();*/
+		Utility u = new Utility(mPdfCore);
+		String[] s = new String[1];
+		s[0] = "{PDFBioSign:sign:mysign}";
+		u.search(s);
 		
 		//setContentView(R.layout.activity_main);
 		setContentView(v);
