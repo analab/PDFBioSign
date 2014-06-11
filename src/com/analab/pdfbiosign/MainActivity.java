@@ -1,5 +1,7 @@
 package com.analab.pdfbiosign;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,9 +13,11 @@ import android.view.*;
 import android.widget.*;
 
 import com.artifex.mupdfdemo.*;
+import com.itextpdf.text.Image;
 
 public class MainActivity extends Activity {
 	private final String TAG ="PDFBioSign";
+	private String mPath;
 	private MuPDFCore mPdfCore;
 
 	@Override
@@ -40,8 +44,9 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Opening file");
 		
-		String pathToFile = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
-		mPdfCore = openFile(pathToFile);
+		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
+		mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
+		mPdfCore = openFile(mPath);
 		
 		Log.d(TAG, "Creating view");
 		
@@ -81,6 +86,21 @@ public class MainActivity extends Activity {
 			return null;
 		}
 		return mPdfCore;
+	}
+	
+	public void signDocument(View view) {
+		final String RESOURCE = "/storage/sdcard0/external_SD/sign.gif";
+		byte[] stream = {'a', 'c', 'x', '0'};
+		try {
+			AcroMaker.SignDocument(mPath, "mysign", mPath + ".new", Image.getInstance(RESOURCE), stream);
+		} catch (Exception e) {
+			Log.e(TAG, "", e);
+		}
+		File from = new File(mPath + ".new");
+		File to = new File(mPath);
+		from.renameTo(to);
+		finish();
+		startActivity(getIntent());
 	}
 }
 
