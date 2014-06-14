@@ -15,10 +15,12 @@ import android.widget.*;
 import com.artifex.mupdfdemo.*;
 import com.itextpdf.text.Image;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements FilePicker.FilePickerSupport {
 	private final String TAG ="PDFBioSign";
 	private String mPath;
 	private MuPDFCore mPdfCore;
+	private FilePicker mFilePicker;
+	private final int FILEPICK_REQUEST=2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,18 +46,22 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Opening file");
 		
-		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
-		mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
+		mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
+		//mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
 		mPdfCore = openFile(mPath);
+		
 		
 		Log.d(TAG, "Creating view");
 		
 		//View v = new PDFBioSignView(getBaseContext(), mPdfCore);
-		ListView v = new ListView(getBaseContext());
+		//ListView v = (ListView) getLayoutInflater().inflate(R.id.listView1, null);
+		//ListView v = (ListView) findViewById(R.id.listView1);
+		ListView v = new ListView(this);
 		
-		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
+		Log.d(TAG, "Setting adapter");
+		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), this, mPdfCore));
 		
-		
+		Log.d(TAG, "Creating utility");
 		Utility u = new Utility(mPdfCore);
 		String[] s = new String[1];
 		s[0] = "{PDFBioSign:sign:mysign}";
@@ -63,6 +69,7 @@ public class MainActivity extends Activity {
 		
 		//setContentView(R.layout.activity_main);
 		setContentView(v);
+
 		
 		//setContentView(new MuPDFPageView(getBaseContext(), null, mPdfCore, new Point(0,0), ));
 		/*
@@ -88,8 +95,9 @@ public class MainActivity extends Activity {
 		return mPdfCore;
 	}
 	
-	public void signDocument(View view) {
-		final String RESOURCE = "/storage/sdcard0/external_SD/sign.gif";
+	public void signDocument() {
+		Log.d(TAG, "Signing document");
+		final String RESOURCE = "/mnt/sdcard/sign.gif";
 		byte[] stream = {'a', 'c', 'x', '0'};
 		try {
 			AcroMaker.SignDocument(mPath, "mysign", mPath + ".new", Image.getInstance(RESOURCE), stream);
@@ -102,9 +110,44 @@ public class MainActivity extends Activity {
 		finish();
 		startActivity(getIntent());
 	}
+
+	@Override
+	public void performPickFor(FilePicker picker) {
+		mFilePicker = picker;
+		Intent intent = new Intent(this, ChoosePDFActivity.class);
+		startActivityForResult(intent, FILEPICK_REQUEST);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (requestCode) {
+		case FILEPICK_REQUEST : 
+			if (mFilePicker != null && resultCode == RESULT_OK)
+				mFilePicker.onPick(data.getData());
+		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.options_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.sign:
+	            signDocument();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
 }
 
-class PDFBioSignView extends View {
+/*class PDFBioSignView extends View {
 	private static final String TAG = "PDFBioSign";
 	private MuPDFCore mCore; 
 	private Bitmap mBitmap;
@@ -132,4 +175,4 @@ class PDFBioSignView extends View {
 		canvas.drawBitmap(mBitmap, 0, 0, null);
 	}
 	
-}
+}*/

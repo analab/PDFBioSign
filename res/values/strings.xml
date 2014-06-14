@@ -4,7 +4,9 @@
     <string name="app_name">PDFBioSign</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_world">Hello world!</string>
-    <string name="pdf_file">repleace_test3.pdf</string>
+    <string name="pdf_file">unsigned.pdf</string>
     <string name="sign_button">Sign</string>
+    <string name="open_button">Open</string>
+    <string name="help_button">Help</string>
 
 </resources>
