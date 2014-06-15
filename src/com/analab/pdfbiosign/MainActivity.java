@@ -104,9 +104,13 @@ public class MainActivity extends Activity implements FilePicker.FilePickerSuppo
 		} catch (Exception e) {
 			Log.e(TAG, "", e);
 		}
+		Log.d(TAG, "Signed file " + RESOURCE);
+		
 		File from = new File(mPath + ".new");
 		File to = new File(mPath);
 		from.renameTo(to);
+		Log.d(TAG, "Renaming file");
+		
 		finish();
 		startActivity(getIntent());
 	}
