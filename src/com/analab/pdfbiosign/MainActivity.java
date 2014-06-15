@@ -3,9 +3,7 @@ package com.analab.pdfbiosign;
 import java.io.File;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.*;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.*;
@@ -15,12 +13,10 @@ import android.widget.*;
 import com.artifex.mupdfdemo.*;
 import com.itextpdf.text.Image;
 
-public class MainActivity extends Activity implements FilePicker.FilePickerSupport {
+public class MainActivity extends Activity {
 	private final String TAG ="PDFBioSign";
 	private String mPath;
 	private MuPDFCore mPdfCore;
-	private FilePicker mFilePicker;
-	private final int FILEPICK_REQUEST=2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +55,7 @@ public class MainActivity extends Activity implements FilePicker.FilePickerSuppo
 		ListView v = new ListView(this);
 		
 		Log.d(TAG, "Setting adapter");
-		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), this, mPdfCore));
+		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
 		
 		Log.d(TAG, "Creating utility");
 		Utility u = new Utility(mPdfCore);
@@ -113,22 +109,6 @@ public class MainActivity extends Activity implements FilePicker.FilePickerSuppo
 		
 		finish();
 		startActivity(getIntent());
-	}
-
-	@Override
-	public void performPickFor(FilePicker picker) {
-		mFilePicker = picker;
-		Intent intent = new Intent(this, ChoosePDFActivity.class);
-		startActivityForResult(intent, FILEPICK_REQUEST);
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		switch (requestCode) {
-		case FILEPICK_REQUEST : 
-			if (mFilePicker != null && resultCode == RESULT_OK)
-				mFilePicker.onPick(data.getData());
-		}
 	}
 	
 	@Override
