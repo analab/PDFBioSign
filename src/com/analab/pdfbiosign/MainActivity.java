@@ -135,7 +135,12 @@ public class MainActivity extends Activity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	        case R.id.sign:
-	            signDocument();
+			try {
+				signDocument();
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	            return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
