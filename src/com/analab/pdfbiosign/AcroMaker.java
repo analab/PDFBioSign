@@ -6,48 +6,41 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateException;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.crypto.Cipher;
 
 import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfAnnotation;
 import com.itextpdf.text.pdf.PdfAppearance;
+import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfFormField;
-import com.itextpdf.text.pdf.PdfImportedPage;
-import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfSignatureAppearance.SignatureEvent;
 import com.itextpdf.text.pdf.PdfStamper;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.security.BouncyCastleDigest;
+import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
+import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
+import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 import com.itextpdf.text.pdf.security.ExternalDigest;
 import com.itextpdf.text.pdf.security.ExternalSignature;
 import com.itextpdf.text.pdf.security.MakeSignature;
 import com.itextpdf.text.pdf.security.PrivateKeySignature;
 import com.itextpdf.text.pdf.security.MakeSignature.CryptoStandard;
-import com.itextpdf.text.xml.xmp.XmpWriter;
+import com.itextpdf.text.pdf.security.ProviderDigest;
 
 public class AcroMaker {
-	static private double x_cord=0,y_cord=0;
+
 	static private String dest_path = "/storage/sdcard0/external_SD/AcroMaker.pdf";
 	
 	static void PutAcros( String src, String dest, String[] cord) throws IOException, DocumentException{
@@ -55,24 +48,10 @@ public class AcroMaker {
 		String[] args;
 		PdfReader reader = new PdfReader(src);
         
-		/*FileOutputStream os = new FileOutputStream(dest);
-        Document document = new Document();
-        PdfWriter writer = PdfWriter.getInstance(document, os);
-        document.open();
-        
-        PdfPTable table = new PdfPTable(2);
-        int n = reader.getNumberOfPages();
-        PdfImportedPage page;
-        for (int i = 1; i <= n; i++) {
-        page = writer.getImportedPage(reader, i);
-        	table.addCell(Image.getInstance(page));
-        }
-        document.add(table);*/
 		for(String tmp_str:cord){
 			args=tmp_str.split(":");
 			switch(args[2]){
 				case "sign" : {
-			      System.out.println("Dostane");
 			      PdfStamper stamper =new	PdfStamper(reader,new	FileOutputStream(dest));
 			      PdfFormField field = PdfFormField.createSignature(stamper.getWriter());
 							
@@ -86,7 +65,7 @@ public class AcroMaker {
 			        tp.rectangle(0.5f, 0.5f, 71.5f, 47.5f);
 			        tp.stroke();
 			        field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
-			        stamper.addAnnotation(field, 1);
+			        stamper.addAnnotation(field, Integer.parseInt(args[4]));
 					
 					stamper.close();
 			       break;
@@ -97,41 +76,34 @@ public class AcroMaker {
 			}
 		}
 		
-		//document.close();
 	}
-	
-	static void SignDocument(String src, String FieldName, String dest, Image sign, byte[] bio) 
+	// return byte strem
+	static byte[] SignDocument(String src, String FieldName, String dest, Image sign, byte[] bio, PrivateKey privkey) 
 			throws FileNotFoundException, IOException, DocumentException, GeneralSecurityException{
 		
-		//encrypt biometric data  
-		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		keyGen.initialize(4096,new SecureRandom());
-		KeyPair pair = keyGen.generateKeyPair();
-		PrivateKey priv = pair.getPrivate();
-		PublicKey pub = pair.getPublic();
 		Cipher cipher = Cipher.getInstance("RSA"); 
-        cipher.init(Cipher.ENCRYPT_MODE, pub); 
-
-        byte[] encryptedByteData = cipher.doFinal(bio);
-		
-		
+        cipher.init(Cipher.ENCRYPT_MODE, privkey);
+        final byte[] encryptedByteData = cipher.doFinal(bio);
+   
 		//sign document
+        
 	    Properties properties = new Properties();
 		properties.load(new FileInputStream("/storage/sdcard0/external_SD/key.properties"));
-		
 		String path = properties.getProperty("PRIVATE");
         String keystore_password = properties.getProperty("PASSWORD");
         String key_password = properties.getProperty("PASSWORD");
+        
         KeyStore ks = KeyStore.getInstance("pkcs12", "BC");
         ks.load(new FileInputStream(path), keystore_password.toCharArray());
         String alias = (String)ks.aliases().nextElement();
         PrivateKey pk = (PrivateKey)ks.getKey(alias, key_password.toCharArray());
         Certificate[] chain = ks.getCertificateChain(alias);
-     
-        PdfReader reader = new PdfReader(src);
-        PdfStamper stamper = PdfStamper.createSignature(reader, new FileOutputStream(dest), '\0');
-
         
+        PdfReader reader = new PdfReader(src);
+        ByteArrayOutputStream boas = null;
+        FileOutputStream os = new FileOutputStream(dest);
+        PdfStamper stamper = PdfStamper.createSignature(reader, os, '\0');
+
         
         PdfSignatureAppearance appearance = stamper.getSignatureAppearance();
         appearance.setVisibleSignature(FieldName);
@@ -139,9 +111,47 @@ public class AcroMaker {
         appearance.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
         appearance.setSignatureGraphic(sign);
         appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+        appearance.setSignatureEvent(
+        		new SignatureEvent(){
+        			public void getSignatureDictionary(PdfDictionary sig) {sig.put(new PdfName("BioSign"),new PdfString(new String(encryptedByteData)));}
+        		}
+        );
         
         ExternalSignature es = new PrivateKeySignature(pk, "SHA-256", "BC");
-        ExternalDigest digest = new BouncyCastleDigest();
-        MakeSignature.signDetached(appearance, digest, es, chain, null, null, null, 0, CryptoStandard.CMS);
+        ExternalDigest digest = new ProviderDigest("BC");
+       
+		MakeSignature.signDetached(appearance, digest, es, chain, null, null, null, 0, CryptoStandard.CMS);
+        
+       // byte[] out = null;
+       // os.write(out);
+        return boas.toByteArray();
 	}
+	
+	
+	static public Set<String> GetTextForSearch(String src) throws IOException {
+        Set<String> set = new HashSet<String>();
+        int k=0,j=0;
+		PdfReader reader = new PdfReader(src);
+        PdfReaderContentParser parser = new PdfReaderContentParser(reader);
+        TextExtractionStrategy strategy;
+        String tmp;
+        for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+            strategy = parser.processContent(i, new SimpleTextExtractionStrategy());
+            tmp=strategy.getResultantText();
+            k=0;j=0;
+            do{
+            	k=tmp.indexOf("{PDFBioSign:", k);
+            	if(k>=0)j=tmp.indexOf('}', k);
+            		else j = -1;
+            	if(j>0 && k>=0){
+            		set.add(tmp.substring(k, j+1));
+            	}
+            	k=j;
+            }while(k>0);
+         
+            	
+        }
+        reader.close();
+        return set;
+    }
 }

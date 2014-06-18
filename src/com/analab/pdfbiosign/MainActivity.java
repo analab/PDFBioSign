@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "Opening file");
 		
 		String pathToFile = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
-		mPdfCore = openFile(pathToFile);
+		mPdfCore = openFile("/storage/sdcard0/external_SD/repleace_test3.pdf");
 		
 		Log.d(TAG, "Creating view");
 		
