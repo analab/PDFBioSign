@@ -17,15 +17,23 @@ import javax.crypto.Cipher;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfAnnotation;
 import com.itextpdf.text.pdf.PdfAppearance;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfFormField;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.RadioCheckField;
 import com.itextpdf.text.pdf.PdfSignatureAppearance.SignatureEvent;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
@@ -47,13 +55,17 @@ public class AcroMaker {
 		
 		String[] args;
 		PdfReader reader = new PdfReader(src);
-        
+		FileOutputStream os = new	FileOutputStream(dest);
+		Rectangle rect;
+		PdfFormField field;
+		Font font = new Font(FontFamily.HELVETICA, 18);
+		 
 		for(String tmp_str:cord){
 			args=tmp_str.split(":");
 			switch(args[2]){
 				case "sign" : {
-			      PdfStamper stamper =new	PdfStamper(reader,new	FileOutputStream(dest));
-			      PdfFormField field = PdfFormField.createSignature(stamper.getWriter());
+			      PdfStamper stamper =new	PdfStamper(reader,os);
+			      field = PdfFormField.createSignature(stamper.getWriter());
 							
 			        field.setWidget(new Rectangle( Float.parseFloat(args[0]), Float.parseFloat(args[1]),Float.parseFloat(args[0])+72, Float.parseFloat(args[1])+48), PdfAnnotation.HIGHLIGHT_INVERT);
 			        field.setFieldName(""+args[3]);
@@ -70,6 +82,37 @@ public class AcroMaker {
 					stamper.close();
 			       break;
 				}
+				case "checkbox" : {
+				      PdfStamper stamper =new	PdfStamper(reader,os);
+				      PdfWriter writer = stamper.getWriter();
+				      PdfContentByte canvas = null;//writer.getDirectContent();
+				      PdfAppearance[] onOff = new PdfAppearance[2];
+				        onOff[0] = canvas.createAppearance(20, 20);
+				        onOff[0].rectangle(1, 1, 18, 18);
+				        onOff[0].stroke();
+				        onOff[1] = canvas.createAppearance(20, 20);
+				        onOff[1].setRGBColorFill(255, 128, 128);
+				        onOff[1].rectangle(1, 1, 18, 18);
+				        onOff[1].fillStroke();
+				        onOff[1].moveTo(1, 1);
+				        onOff[1].lineTo(19, 19);
+				        onOff[1].moveTo(1, 19);
+				        onOff[1].lineTo(19, 1);
+				        onOff[1].stroke();
+				        RadioCheckField checkbox;
+				        
+				            rect = new Rectangle(Float.parseFloat(args[0]), Float.parseFloat(args[1]),Float.parseFloat(args[0])+72, Float.parseFloat(args[1])+48);
+				            checkbox = new RadioCheckField(writer, rect, args[3], "Yes");
+				            field = checkbox.getCheckField();
+				            field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, "No", onOff[0]);
+				            field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, "Yes", onOff[1]);
+				            writer.addAnnotation(field);
+				            ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT,
+				                new Phrase(args[3], font), Float.parseFloat(args[0])+30, Float.parseFloat(args[1])-16, 0);
+				        
+						stamper.close();
+				       break;
+					}
 				default:{
 					System.err.println("Unknown type.");
 				}

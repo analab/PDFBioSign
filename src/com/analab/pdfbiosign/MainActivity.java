@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "Opening file");
 		
 		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
-		mPath = "/storage/sdcard0/external_SD/digitalsignatures20130304.pdf";
+		mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
 		mPdfCore = openFile(mPath);
 		
 		
@@ -99,7 +99,8 @@ public class MainActivity extends Activity {
 	
 	public void signDocument() throws NoSuchAlgorithmException {
 		Log.d(TAG, "Signing document");
-		final String RESOURCE = "/mnt/sdcard/sign.gif";
+		//final String RESOURCE = "/mnt/sdcard/sign.gif";
+		final String RESOURCE = "/storage/sdcard0/external_SD/sign.gif";
 		
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 		keyGen.initialize(1024,new SecureRandom());
