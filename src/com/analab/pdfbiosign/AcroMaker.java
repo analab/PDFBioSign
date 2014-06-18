@@ -12,11 +12,9 @@ import java.security.cert.Certificate;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-
 import javax.crypto.Cipher;
-
+import android.annotation.SuppressLint;
 import android.os.Environment;
-
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -49,10 +47,9 @@ import com.itextpdf.text.pdf.security.PrivateKeySignature;
 import com.itextpdf.text.pdf.security.MakeSignature.CryptoStandard;
 import com.itextpdf.text.pdf.security.ProviderDigest;
 
+@SuppressLint("TrulyRandom")
 public class AcroMaker {
 
-	static private String dest_path = "/storage/sdcard0/external_SD/AcroMaker.pdf";
-	
 	static void PutAcros( String src, String dest, String[] cord) throws IOException, DocumentException{
 		
 		String[] args;
@@ -87,7 +84,7 @@ public class AcroMaker {
 				case "checkbox" : {
 				      PdfStamper stamper =new	PdfStamper(reader,os);
 				      PdfWriter writer = stamper.getWriter();
-				      PdfContentByte canvas = null;//writer.getDirectContent();
+				      PdfContentByte canvas = writer.getDirectContent();
 				      PdfAppearance[] onOff = new PdfAppearance[2];
 				        onOff[0] = canvas.createAppearance(20, 20);
 				        onOff[0].rectangle(1, 1, 18, 18);
@@ -123,7 +120,7 @@ public class AcroMaker {
 		
 	}
 	// return byte strem
-	static byte[] SignDocument(String src, String FieldName, String dest, Image sign, byte[] bio, PrivateKey privkey) 
+	static void SignDocument(String src, String FieldName, String dest, Image sign, byte[] bio, PrivateKey privkey) 
 			throws FileNotFoundException, IOException, DocumentException, GeneralSecurityException{
 		
 		Cipher cipher = Cipher.getInstance("RSA"); 
@@ -133,9 +130,9 @@ public class AcroMaker {
 		//sign document
         
 	    Properties properties = new Properties();
-	    properties.load(new FileInputStream(Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/key.properties"));
-		//properties.load(new FileInputStream("/storage/sdcard0/external_SD/key.properties"));
-		String path = Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/hackveda.pfx";// properties.getProperty("PRIVATE");
+	    //properties.load(new FileInputStream(Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/key.properties"));
+		properties.load(new FileInputStream("/storage/sdcard0/external_SD/key.properties"));
+		String path = properties.getProperty("PRIVATE");//Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/hackveda.pfx";// 
         String keystore_password = properties.getProperty("PASSWORD");
         String key_password = properties.getProperty("PASSWORD");
         
@@ -146,7 +143,7 @@ public class AcroMaker {
         Certificate[] chain = ks.getCertificateChain(alias);
         
         PdfReader reader = new PdfReader(src);
-        ByteArrayOutputStream boas = null;
+       // ByteArrayOutputStream boas = null;
         FileOutputStream os = new FileOutputStream(dest);
         PdfStamper stamper = PdfStamper.createSignature(reader, os, '\0');
 
@@ -170,7 +167,7 @@ public class AcroMaker {
         
        // byte[] out = null;
        // os.write(out);
-        return boas.toByteArray();
+      //  return boas.toByteArray();
 	}
 	
 	
