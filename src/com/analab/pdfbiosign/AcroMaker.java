@@ -113,7 +113,7 @@ public class AcroMaker {
         appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
         appearance.setSignatureEvent(
         		new SignatureEvent(){
-        			public void getSignatureDictionary(PdfDictionary sig) {sig.put(new PdfName("BioSign"),new PdfString(new String(encryptedByteData)));}
+        			public void getSignatureDictionary(PdfDictionary sig) {sig.put(new PdfName("BioSignEncripted"),new PdfString(new String(encryptedByteData)));}
         		}
         );
         

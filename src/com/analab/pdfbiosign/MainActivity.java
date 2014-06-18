@@ -48,8 +48,8 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Opening file");
 		
-		mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
-		//mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
+		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
+		mPath = "/storage/sdcard0/external_SD/digitalsignatures20130304.pdf";
 		mPdfCore = openFile(mPath);
 		
 		
