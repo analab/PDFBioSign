@@ -1,9 +1,15 @@
 package com.analab.pdfbiosign;
 
+import java.io.File;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.*;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.*;
@@ -11,9 +17,11 @@ import android.view.*;
 import android.widget.*;
 
 import com.artifex.mupdfdemo.*;
+import com.itextpdf.text.Image;
 
 public class MainActivity extends Activity {
 	private final String TAG ="PDFBioSign";
+	private String mPath;
 	private MuPDFCore mPdfCore;
 
 	@Override
@@ -40,17 +48,22 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Opening file");
 		
-		String pathToFile = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
-		mPdfCore = openFile("/storage/sdcard0/external_SD/repleace_test3.pdf");
+		mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
+		//mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
+		mPdfCore = openFile(mPath);
+		
 		
 		Log.d(TAG, "Creating view");
 		
 		//View v = new PDFBioSignView(getBaseContext(), mPdfCore);
-		ListView v = new ListView(getBaseContext());
+		//ListView v = (ListView) getLayoutInflater().inflate(R.id.listView1, null);
+		//ListView v = (ListView) findViewById(R.id.listView1);
+		ListView v = new ListView(this);
 		
+		Log.d(TAG, "Setting adapter");
 		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
 		
-		
+		Log.d(TAG, "Creating utility");
 		Utility u = new Utility(mPdfCore);
 		String[] s = new String[1];
 		s[0] = "{PDFBioSign:sign:mysign}";
@@ -58,6 +71,7 @@ public class MainActivity extends Activity {
 		
 		//setContentView(R.layout.activity_main);
 		setContentView(v);
+
 		
 		//setContentView(new MuPDFPageView(getBaseContext(), null, mPdfCore, new Point(0,0), ));
 		/*
@@ -82,9 +96,54 @@ public class MainActivity extends Activity {
 		}
 		return mPdfCore;
 	}
+	
+	public void signDocument() throws NoSuchAlgorithmException {
+		Log.d(TAG, "Signing document");
+		final String RESOURCE = "/mnt/sdcard/sign.gif";
+		
+		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+		keyGen.initialize(1024,new SecureRandom());
+		KeyPair pair = keyGen.generateKeyPair();
+		PrivateKey priv = pair.getPrivate();
+		PublicKey pub = pair.getPublic();
+		byte[] bio ={'f','d','a','b','a','d','f','b','a','b','f','a','b','f','a'};
+		try {
+			AcroMaker.SignDocument(mPath, "mysign", mPath + ".new", Image.getInstance(RESOURCE), bio,priv );
+		} catch (Exception e) {
+			Log.e(TAG, "", e);
+		}
+		Log.d(TAG, "Signed file " + RESOURCE);
+		
+		File from = new File(mPath + ".new");
+		File to = new File(mPath);
+		from.renameTo(to);
+		Log.d(TAG, "Renaming file");
+		
+		finish();
+		startActivity(getIntent());
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.options_menu, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.sign:
+	            signDocument();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
 }
 
-class PDFBioSignView extends View {
+/*class PDFBioSignView extends View {
 	private static final String TAG = "PDFBioSign";
 	private MuPDFCore mCore; 
 	private Bitmap mBitmap;
@@ -112,4 +171,4 @@ class PDFBioSignView extends View {
 		canvas.drawBitmap(mBitmap, 0, 0, null);
 	}
 	
-}
+}*/
