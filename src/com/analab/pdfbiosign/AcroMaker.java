@@ -15,6 +15,8 @@ import java.util.Set;
 
 import javax.crypto.Cipher;
 
+import android.os.Environment;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -131,8 +133,9 @@ public class AcroMaker {
 		//sign document
         
 	    Properties properties = new Properties();
-		properties.load(new FileInputStream("/storage/sdcard0/external_SD/key.properties"));
-		String path = properties.getProperty("PRIVATE");
+	    properties.load(new FileInputStream(Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/key.properties"));
+		//properties.load(new FileInputStream("/storage/sdcard0/external_SD/key.properties"));
+		String path = Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/hackveda.pfx";// properties.getProperty("PRIVATE");
         String keystore_password = properties.getProperty("PASSWORD");
         String key_password = properties.getProperty("PASSWORD");
         
