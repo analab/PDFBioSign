@@ -50,7 +50,7 @@ import com.itextpdf.text.pdf.security.ProviderDigest;
 @SuppressLint("TrulyRandom")
 public class AcroMaker {
 
-	static void PutAcros( String src, String dest, String[] cord) throws IOException, DocumentException{
+	public static void PutAcros( String src, String dest, String[] cord) throws IOException, DocumentException{
 		
 		String[] args;
 		PdfReader reader = new PdfReader(src);
