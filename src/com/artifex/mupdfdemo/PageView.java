@@ -111,8 +111,8 @@ public abstract class PageView extends ViewGroup {
 	protected final Context   mContext;
 	protected     int       mPageNumber;
 	private       Point     mParentSize;
-	protected     Point     mSize;   // Size of page at minimum zoom
-	protected     float     mSourceScale;
+	public     Point     mSize;   // Size of page at minimum zoom
+	public     float     mSourceScale;
 
 	private       ImageView mEntire; // Image rendered at minimum zoom
 	private       Bitmap    mEntireBm;

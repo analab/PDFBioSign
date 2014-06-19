@@ -72,6 +72,11 @@ public class Utility {
 			@Override
 			public boolean onLongClick(View v) {
 				// TODO: convert
+				MuPDFPageView pv = (MuPDFPageView)v;
+				float scale = pv.mSourceScale * (float)pv.getWidth()/(float)pv.mSize.x;
+				final float docRelX = (pv.canvas.mX - pv.getLeft())/scale;
+				final float docRelY = (pv.canvas.mY - pv.getTop())/scale;
+				
 				return true;
 			}
 		});
