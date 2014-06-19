@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/open" android:title="@string/open_button"></item>
     <item android:id="@+id/sign" android:title="@string/sign_button"></item>
-    <item android:id="@+id/help" android:title="@string/help_button"></item>
+    <item android:id="@+id/dialog" android:title="@string/help_button"></item>
     
 
 </menu>

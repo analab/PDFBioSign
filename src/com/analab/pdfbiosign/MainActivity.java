@@ -108,7 +108,7 @@ public class MainActivity extends Activity {
 		startActivity(intent2);*/
 	}
 	private void showPdf(String path){
-		
+		mPath=path;
 		mPdfCore = openFile(path);
 		
 		
@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
 		File to = new File(mPath);
 		from.renameTo(to);
 		Log.d(TAG, "Renaming file");
-		
+		showPdf(mPath);
 		finish();
 		startActivity(getIntent());
 	}
@@ -226,6 +226,10 @@ public class MainActivity extends Activity {
 	            }
 	          
 	    		
+	        }
+	        case R.id.dialog:
+	        {
+	        	
 	        }
 	        default:
 	            return super.onOptionsItemSelected(item);

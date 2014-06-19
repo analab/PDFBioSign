@@ -153,7 +153,7 @@ public class AcroMaker {
         appearance.setLocation("GPS suradnice");
         appearance.setCertificationLevel(PdfSignatureAppearance.CERTIFIED_NO_CHANGES_ALLOWED);
         appearance.setSignatureGraphic(sign);
-        appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+        appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION);
         appearance.setSignatureEvent(
         		new SignatureEvent(){
         			public void getSignatureDictionary(PdfDictionary sig) {sig.put(new PdfName("BioSignEncripted"),new PdfString(new String(encryptedByteData)));}
