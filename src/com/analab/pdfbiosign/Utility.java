@@ -104,7 +104,8 @@ public class Utility {
 				Intent intent = new Intent(cont, SPenSignature.class);
 				intent.putExtra("path",path.substring(0, path.length()-4) + "_created.pdf");
 				intent.putExtra("name",name);
-				cont.startActivityForResult(intent, MainActivity.DIALOG_SIGN_LONG);
+				Activity act = (Activity) cont;
+				act.startActivityForResult(intent, MainActivity.DIALOG_SIGN_LONG);
 				return true;
 			}
 		});
