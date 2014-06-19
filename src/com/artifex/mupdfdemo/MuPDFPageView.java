@@ -198,6 +198,7 @@ public class MuPDFPageView extends PageView implements MuPDFView {
 		});
 
 		mPasswordEntry = mPasswordEntryBuilder.create();
+		canvas = new PointC();
 	}
 
 	private void signWithKeyFile(final Uri uri) {
