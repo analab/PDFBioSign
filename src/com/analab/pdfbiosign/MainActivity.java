@@ -29,11 +29,13 @@ public class MainActivity extends Activity {
 	private static final int FILE_CHOOSER = 11;
 	private static final int ACTIVITY_CHOOSE_FILE = 88;
 	private static final int CHOOSE_FILE_REQUESTCODE = 0;
-	private static final int DIALOG_SIGN = 55;
+	public static final int DIALOG_SIGN = 55;
+	public static final int DIALOG_SIGN_LONG = 66;
 	private final String TAG = "PDFBioSign";
 	private String mPath;
 	private MuPDFCore mPdfCore;
 	private Intent intent = getIntent();
+
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +109,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void showPdf(String path) {
-		
+
 		mPath = path;
 		mPdfCore = openFile(path);
 
@@ -163,20 +165,19 @@ public class MainActivity extends Activity {
 		byte[] bio = { 'f', 'd', 'a', 'b', 'a', 'd', 'f', 'b', 'a', 'b', 'f',
 				'a', 'b', 'f', 'a' };
 		try {
-			AcroMaker.SignDocument(mPath, "mysign", mPath.substring(0, mPath.length()-4) + "_signed.pdf",
+			AcroMaker.SignDocument(mPath, "mysign",
+					mPath.substring(0, mPath.length() - 4) + "_signed.pdf",
 					Image.getInstance(RESOURCE), bio, priv);
 		} catch (Exception e) {
 			Log.e(TAG, "", e);
 		}
 		Log.d(TAG, "Signed file " + RESOURCE);
-		mPath=mPath.substring(0, mPath.length()-4) + "_signed.pdf";
+		mPath = mPath.substring(0, mPath.length() - 4) + "_signed.pdf";
 		/*
-		File from = new File(mPath + ".new");
-		File to = new File(mPath);
-		from.renameTo(to);
-		Log.d(TAG, "Renaming file");
-		finish();
-		//startActivity(getIntent());*/
+		 * File from = new File(mPath + ".new"); File to = new File(mPath);
+		 * from.renameTo(to); Log.d(TAG, "Renaming file"); finish();
+		 * //startActivity(getIntent());
+		 */
 	}
 
 	@Override
@@ -199,7 +200,7 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 			return true;
-		case R.id.open: 
+		case R.id.open:
 			Intent intent2 = new Intent(Intent.ACTION_GET_CONTENT);
 
 			intent2.setType("*/*");
@@ -230,7 +231,7 @@ public class MainActivity extends Activity {
 						Toast.LENGTH_SHORT).show();
 			}
 			return true;
-		
+
 		case R.id.dialog: {
 
 			Intent intent = new Intent(this, SPenSignature.class);
@@ -240,7 +241,7 @@ public class MainActivity extends Activity {
 			// (page*100 + field)
 
 			startActivityForResult(intent, DIALOG_SIGN);
-			
+
 			showPdf(mPath);
 			return true;
 		}
@@ -255,16 +256,16 @@ public class MainActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case CHOOSE_FILE_REQUESTCODE: 
+		case CHOOSE_FILE_REQUESTCODE:
 			if (resultCode == RESULT_OK) {
 				Uri uri = data.getData();
 				Log.d(TAG, "intent 2 " + uri.getPath());
 				String mPath = uri.getPath();
 				showPdf(mPath);
-				
+
 			}
 			break;
-		case DIALOG_SIGN: 
+		case DIALOG_SIGN:
 			if (resultCode == Activity.RESULT_OK) {
 
 				Bundle extras = data.getExtras();
@@ -275,7 +276,7 @@ public class MainActivity extends Activity {
 
 				sig_bmp = extras.getByteArray("bmp");
 				sig_bio = extras.getByteArray("sig");
-				
+
 				KeyPairGenerator keyGen = null;
 				try {
 					keyGen = KeyPairGenerator.getInstance("RSA");
@@ -287,26 +288,63 @@ public class MainActivity extends Activity {
 				KeyPair pair = keyGen.generateKeyPair();
 				PrivateKey priv = pair.getPrivate();
 				PublicKey pub = pair.getPublic();
-				
+
 				try {
-					AcroMaker.SignDocument(mPath, "mysign", mPath + ".new",
+					AcroMaker.SignDocument(mPath, "mysign",
+							mPath.substring(0, mPath.length() - 4)
+									+ "_signed.pdf",
 							Image.getInstance(sig_bmp), sig_bio, priv);
 				} catch (Exception e) {
 					Log.e(TAG, "", e);
 				}
+				mPath = mPath.substring(0, mPath.length() - 4) + "_signed.pdf";
 
-				File from = new File(mPath + ".new");
-				File to = new File(mPath);
-				from.renameTo(to);
-				Log.d(TAG, "Renaming file");
 				showPdf(mPath);
-				finish();
-				startActivity(getIntent());
 
 			}
 
-		
-		break;
+			break;
+
+		case DIALOG_SIGN_LONG:
+			if (resultCode == Activity.RESULT_OK) {
+
+				Bundle extras = data.getExtras();
+
+				byte[] sig_bio = null, sig_bmp = null;
+
+				Bitmap bmp = null;
+				String name;
+				sig_bmp = extras.getByteArray("bmp");
+				sig_bio = extras.getByteArray("sig");
+				name = extras.getString("name");
+				mPath=extras.getString("path");
+				KeyPairGenerator keyGen = null;
+				try {
+					keyGen = KeyPairGenerator.getInstance("RSA");
+				} catch (NoSuchAlgorithmException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				keyGen.initialize(1024, new SecureRandom());
+				KeyPair pair = keyGen.generateKeyPair();
+				PrivateKey priv = pair.getPrivate();
+				PublicKey pub = pair.getPublic();
+
+				try {
+					AcroMaker.SignDocument(mPath, name,
+							mPath.substring(0, mPath.length() - 4)
+									+ "_signed.pdf",
+							Image.getInstance(sig_bmp), sig_bio, priv);
+				} catch (Exception e) {
+					Log.e(TAG, "", e);
+				}
+				mPath = mPath.substring(0, mPath.length() - 4) + "_signed.pdf";
+
+				showPdf(mPath);
+
+			}
+
+			break;
 		}
 	}
 }

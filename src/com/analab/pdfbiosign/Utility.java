@@ -1,7 +1,20 @@
 package com.analab.pdfbiosign;
 
+import java.io.IOException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.RectF;
+import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.*;
 import android.view.View.OnLongClickListener;
@@ -9,6 +22,8 @@ import android.view.View.OnTouchListener;
 
 import com.artifex.mupdfdemo.MuPDFCore;
 import com.artifex.mupdfdemo.MuPDFPageView;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Image;
 
 public class Utility {
 	private MuPDFCore mCore;
@@ -58,7 +73,7 @@ public class Utility {
 		return ret;
 	}
 
-	public static void setListeners(MuPDFPageView pageView) {
+	public static void setListeners(MuPDFPageView pageView,int page,final String path,final Activity cont) {
 		pageView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -76,9 +91,23 @@ public class Utility {
 				float scale = pv.mSourceScale * (float)pv.getWidth()/(float)pv.mSize.x;
 				final float docRelX = (pv.canvas.mX - pv.getLeft())/scale;
 				final float docRelY = (pv.canvas.mY - pv.getTop())/scale;
+				String name;
+				name="sign"+docRelX+""+docRelY;
+				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":1"}; 
+				try {
+					AcroMaker.PutAcros(path,path.substring(0, path.length()-4) + "_created.pdf",mTMP);
+				} catch (IOException | DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
+				Intent intent = new Intent(cont, SPenSignature.class);
+				intent.putExtra("path",path.substring(0, path.length()-4) + "_created.pdf");
+				intent.putExtra("name",name);
+				cont.startActivityForResult(intent, MainActivity.DIALOG_SIGN_LONG);
 				return true;
 			}
 		});
 	}
+	
 }
