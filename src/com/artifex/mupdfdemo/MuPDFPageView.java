@@ -89,7 +89,7 @@ class PassClickResultSignature extends PassClickResult {
 @SuppressLint("NewApi")
 public class MuPDFPageView extends PageView implements MuPDFView {
 	final private FilePicker.FilePickerSupport mFilePickerSupport;
-	private final MuPDFCore mCore;
+	final MuPDFCore mCore;
 	private AsyncTask<Void,Void,PassClickResult> mPassClick;
 	private RectF mWidgetAreas[];
 	private Annotation mAnnotations[];

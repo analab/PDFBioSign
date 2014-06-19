@@ -1,5 +1,6 @@
 package com.artifex.mupdfdemo;
 
+import com.analab.pdfbiosign.MainActivity;
 import com.analab.pdfbiosign.Utility;
 
 import android.content.Context;
@@ -76,7 +77,7 @@ public class MuPDFPageAdapter extends BaseAdapter {
 
 			sizingTask.execute((Void)null);
 		}
-		Utility.setListeners(pageView, pageView.mPageNumber, pageView.getContext());
+		Utility.setListeners(pageView, pageView.mPageNumber, pageView.mCore.filename, (MainActivity)pageView.getContext());
 		return pageView;
 	}
 }

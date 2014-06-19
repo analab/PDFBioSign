@@ -23,6 +23,7 @@ public class MuPDFCore
 	private long globals;
 	private byte fileBuffer[];
 	private String file_format;
+	public String filename;
 
 	/* The native functions */
 	private native long openFile(String filename);
@@ -81,6 +82,7 @@ public class MuPDFCore
 		{
 			throw new Exception(String.format(context.getString(R.string.cannot_open_file_Path), filename));
 		}
+		this.filename = filename;
 		file_format = fileFormatInternal();
 	}
 
