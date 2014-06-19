@@ -66,14 +66,14 @@ public class AcroMaker {
 			      PdfStamper stamper =new	PdfStamper(reader,os);
 			      field = PdfFormField.createSignature(stamper.getWriter());
 							
-			        field.setWidget(new Rectangle( Float.parseFloat(args[0]), Float.parseFloat(args[1]),Float.parseFloat(args[0])+72, Float.parseFloat(args[1])+48), PdfAnnotation.HIGHLIGHT_INVERT);
+			        field.setWidget(new Rectangle( Float.parseFloat(args[0]), Float.parseFloat(args[1]),Float.parseFloat(args[0])+(72*2), Float.parseFloat(args[1])+(48*2)), PdfAnnotation.HIGHLIGHT_INVERT);
 			        field.setFieldName(""+args[3]);
 			        field.setFlags(PdfAnnotation.FLAGS_PRINT);
 			        field.setPage();
 			        field.setMKBorderColor(BaseColor.BLACK);
 			        field.setMKBackgroundColor(BaseColor.WHITE);
-			        PdfAppearance tp = PdfAppearance.createAppearance(stamper.getWriter(), 72, 48);
-			        tp.rectangle(0.5f, 0.5f, 71.5f, 47.5f);
+			        PdfAppearance tp = PdfAppearance.createAppearance(stamper.getWriter(), 72*2, 48*2);
+			        tp.rectangle(0.5f, 0.5f, 71.5f*2, 47.5f*2);
 			        tp.stroke();
 			        field.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
 			        stamper.addAnnotation(field, Integer.parseInt(args[4]));
