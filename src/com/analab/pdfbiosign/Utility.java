@@ -73,7 +73,7 @@ public class Utility {
 		return ret;
 	}
 
-	public static void setListeners(MuPDFPageView pageView,int page,final String path,final Activity cont) {
+	public static void setListeners(MuPDFPageView pageView,final int page,final String path,final Activity cont) {
 		pageView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
@@ -93,7 +93,7 @@ public class Utility {
 				final float docRelY = (pv.canvas.mY - pv.getTop())/scale;
 				String name;
 				name="sign"+docRelX+""+docRelY;
-				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":1"}; 
+				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":"+page}; 
 				try {
 					AcroMaker.PutAcros(path,path.substring(0, path.length()-4) + "_created.pdf",mTMP);
 				} catch (IOException | DocumentException e) {
