@@ -120,12 +120,12 @@ public class AcroMaker {
 		
 	}
 	// return byte strem
-	static void SignDocument(String src, String FieldName, String dest, Image sign, byte[] bio, PrivateKey privkey) 
+	static void SignDocument(String src, String FieldName, String dest, Image sign, final byte[] bio, PrivateKey privkey) 
 			throws FileNotFoundException, IOException, DocumentException, GeneralSecurityException{
 		
-		Cipher cipher = Cipher.getInstance("RSA"); 
-        cipher.init(Cipher.ENCRYPT_MODE, privkey);
-        final byte[] encryptedByteData = cipher.doFinal(bio);
+//		Cipher cipher = Cipher.getInstance("RSA"); 
+//        cipher.init(Cipher.ENCRYPT_MODE, privkey);
+//        final byte[] encryptedByteData = cipher.doFinal(bio);
    
 		//sign document
         
@@ -156,7 +156,7 @@ public class AcroMaker {
         appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION);
         appearance.setSignatureEvent(
         		new SignatureEvent(){
-        			public void getSignatureDictionary(PdfDictionary sig) {sig.put(new PdfName("BioSignEncripted"),new PdfString(new String(encryptedByteData)));}
+        			public void getSignatureDictionary(PdfDictionary sig) {sig.put(new PdfName("BioSignEncripted"),new PdfString(new String(bio)));}
         		}
         );
         

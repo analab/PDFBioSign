@@ -197,12 +197,10 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 			return true;
-		case R.id.open: {
+		case R.id.open: 
 			Intent intent2 = new Intent(Intent.ACTION_GET_CONTENT);
-
 			intent2.setType("*/*");
 			intent2.addCategory(Intent.CATEGORY_OPENABLE);
-
 			// special intent for Samsung file manager
 			Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
 			// if you want any file type, you can skip next line
@@ -227,21 +225,11 @@ public class MainActivity extends Activity {
 						"No suitable File Manager was found.",
 						Toast.LENGTH_SHORT).show();
 			}
-
-		}
-		case R.id.dialog: {
-
+		return true;
+		case R.id.dialog: 
 			Intent intent = new Intent(this, SPenSignature.class);
-
-			// the return code for the result is based on formula =>
-
-			// (page*100 + field)
-
 			startActivityForResult(intent, DIALOG_SIGN);
-			
-
-			return false;
-		}
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -253,36 +241,21 @@ public class MainActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case ACTIVITY_CHOOSE_FILE: {
-			if (resultCode == RESULT_OK) {
-				Uri uri = data.getData();
-				Log.d(TAG, "intent 1 " + uri.getPath());
-				String mPath = uri.getPath();
-				showPdf(mPath);
-			}
-		}
-		case CHOOSE_FILE_REQUESTCODE: {
+		case CHOOSE_FILE_REQUESTCODE: 
 			if (resultCode == RESULT_OK) {
 				Uri uri = data.getData();
 				Log.d(TAG, "intent 2 " + uri.getPath());
 				String mPath = uri.getPath();
 				showPdf(mPath);
 			}
-		}
-
-		case DIALOG_SIGN: {
-
+		break;
+		case DIALOG_SIGN: 
 			if (resultCode == Activity.RESULT_OK) {
-
 				Bundle extras = data.getExtras();
-
 				byte[] sig_bio = null, sig_bmp = null;
-
 				Bitmap bmp = null;
-
 				sig_bmp = extras.getByteArray("bmp");
 				sig_bio = extras.getByteArray("sig");
-				
 				KeyPairGenerator keyGen = null;
 				try {
 					keyGen = KeyPairGenerator.getInstance("RSA");
@@ -309,11 +282,10 @@ public class MainActivity extends Activity {
 				showPdf(mPath);
 				finish();
 				startActivity(getIntent());
-
 			}
-
+		break;
 		}
-		}
+		
 	}
 }
 
