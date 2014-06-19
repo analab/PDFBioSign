@@ -73,7 +73,7 @@ public class Utility {
 		return ret;
 	}
 
-	public static void setListeners(MuPDFPageView pageView,final int page,final String path,final Activity cont) {
+	public static void setListeners(MuPDFPageView pageView,final int page,final String path,final Context cont) {
 		pageView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
