@@ -15,8 +15,8 @@
     android:layout_gravity="top|center_horizontal"
     
     
-    android:layout_width="600dp"
-    android:layout_height="360dp"
+    android:layout_width="512dp"
+    android:layout_height="320dp"
     
     android:background="#d0d0d0d0"
     
