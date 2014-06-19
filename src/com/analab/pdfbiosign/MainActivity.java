@@ -33,14 +33,14 @@ public class MainActivity extends Activity {
 	private final String TAG = "PDFBioSign";
 	private String mPath;
 	private MuPDFCore mPdfCore;
-
+	private Intent intent = getIntent();
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// setContentView(R.layout.activity_main);
 
-		Intent intent = getIntent();
+		intent = getIntent();
 
 		Log.d(TAG, "Intent action: " + intent.getAction());
 		Log.d(TAG, "Intent data: " + intent.getData());
@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
 	}
 
 	private void showPdf(String path) {
+		
 		mPath = path;
 		mPdfCore = openFile(path);
 
@@ -162,20 +163,20 @@ public class MainActivity extends Activity {
 		byte[] bio = { 'f', 'd', 'a', 'b', 'a', 'd', 'f', 'b', 'a', 'b', 'f',
 				'a', 'b', 'f', 'a' };
 		try {
-			AcroMaker.SignDocument(mPath, "mysign", mPath + ".new",
+			AcroMaker.SignDocument(mPath, "mysign", mPath.substring(0, mPath.length()-4) + "_signed.pdf",
 					Image.getInstance(RESOURCE), bio, priv);
 		} catch (Exception e) {
 			Log.e(TAG, "", e);
 		}
 		Log.d(TAG, "Signed file " + RESOURCE);
-
+		mPath=mPath.substring(0, mPath.length()-4) + "_signed.pdf";
+		/*
 		File from = new File(mPath + ".new");
 		File to = new File(mPath);
 		from.renameTo(to);
 		Log.d(TAG, "Renaming file");
-		showPdf(mPath);
 		finish();
-		startActivity(getIntent());
+		//startActivity(getIntent());*/
 	}
 
 	@Override
@@ -192,6 +193,7 @@ public class MainActivity extends Activity {
 		case R.id.sign:
 			try {
 				signDocument();
+				showPdf(mPath);
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -227,7 +229,7 @@ public class MainActivity extends Activity {
 						"No suitable File Manager was found.",
 						Toast.LENGTH_SHORT).show();
 			}
-
+			return true;
 		}
 		case R.id.dialog: {
 
@@ -239,8 +241,8 @@ public class MainActivity extends Activity {
 
 			startActivityForResult(intent, DIALOG_SIGN);
 			
-
-			return false;
+			showPdf(mPath);
+			return true;
 		}
 		default:
 			return super.onOptionsItemSelected(item);
@@ -253,21 +255,16 @@ public class MainActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		case ACTIVITY_CHOOSE_FILE: {
-			if (resultCode == RESULT_OK) {
-				Uri uri = data.getData();
-				Log.d(TAG, "intent 1 " + uri.getPath());
-				String mPath = uri.getPath();
-				showPdf(mPath);
-			}
-		}
+		
 		case CHOOSE_FILE_REQUESTCODE: {
 			if (resultCode == RESULT_OK) {
 				Uri uri = data.getData();
 				Log.d(TAG, "intent 2 " + uri.getPath());
 				String mPath = uri.getPath();
 				showPdf(mPath);
+				
 			}
+			break;
 		}
 
 		case DIALOG_SIGN: {
@@ -313,6 +310,7 @@ public class MainActivity extends Activity {
 			}
 
 		}
+		break;
 		}
 	}
 }
