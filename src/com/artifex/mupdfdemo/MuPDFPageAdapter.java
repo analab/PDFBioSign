@@ -1,5 +1,7 @@
 package com.artifex.mupdfdemo;
 
+import com.analab.pdfbiosign.Utility;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -74,6 +76,7 @@ public class MuPDFPageAdapter extends BaseAdapter {
 
 			sizingTask.execute((Void)null);
 		}
+		Utility.setListeners(pageView, pageView.mPageNumber, pageView.getContext());
 		return pageView;
 	}
 }
