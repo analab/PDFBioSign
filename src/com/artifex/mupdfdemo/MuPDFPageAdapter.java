@@ -1,15 +1,25 @@
 package com.artifex.mupdfdemo;
 
-import com.analab.pdfbiosign.MainActivity;
-import com.analab.pdfbiosign.Utility;
+import java.io.IOException;
 
+import com.analab.pdfbiosign.AcroMaker;
+import com.analab.pdfbiosign.MainActivity;
+import com.analab.pdfbiosign.SPenSignature;
+import com.analab.pdfbiosign.Utility;
+import com.itextpdf.text.DocumentException;
+
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.SparseArray;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.BaseAdapter;
 
 public class MuPDFPageAdapter extends BaseAdapter {
@@ -77,7 +87,42 @@ public class MuPDFPageAdapter extends BaseAdapter {
 
 			sizingTask.execute((Void)null);
 		}
-		Utility.setListeners(pageView, pageView.mPageNumber, pageView.mCore.filename, pageView.getContext());
+		
+		pageView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				((MuPDFPageView) v).canvas.mX = event.getX();
+				((MuPDFPageView) v).canvas.mY = event.getY();
+				return false;
+			}
+		});
+		
+		pageView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO: convert
+				MuPDFPageView pv = (MuPDFPageView)v;
+				float scale = pv.mSourceScale * (float)pv.getWidth()/(float)pv.mSize.x;
+				final float docRelX = (pv.canvas.mX - pv.getLeft())/scale;
+				final float docRelY = (pv.canvas.mY - pv.getTop())/scale;
+				String name;
+				name="sign"+docRelX+""+docRelY;
+				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":1"}; 
+				try {
+					AcroMaker.PutAcros(pv.mCore.filename,pv.mCore.filename.substring(0, pv.mCore.filename.length()-4) + "_created.pdf",mTMP);
+				} catch (IOException | DocumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				Intent intent = new Intent(pv.getContext(), SPenSignature.class);
+				intent.putExtra("path",pv.mCore.filename.substring(0, pv.mCore.filename.length()-4) + "_created.pdf");
+				intent.putExtra("name",name);
+				Activity act = (Activity) pv.getContext();
+				act.startActivityForResult(intent, MainActivity.DIALOG_SIGN_LONG);
+				return true;
+			}
+		});
 		return pageView;
 	}
 }
