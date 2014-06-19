@@ -109,7 +109,7 @@ public class MuPDFPageAdapter extends BaseAdapter {
 				final float docRelY = (pv.canvas.mY - pv.getTop())/scale;
 				String name;
 				name="sign"+docRelX+""+docRelY;
-				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":1"}; 
+				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":"+(pv.mPageNumber+1)}; 
 				try {
 					AcroMaker.PutAcros(pv.mCore.filename,pv.mCore.filename.substring(0, pv.mCore.filename.length()-4) + "_created.pdf",mTMP);
 				} catch (IOException | DocumentException e) {
