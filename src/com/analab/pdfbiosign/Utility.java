@@ -3,9 +3,12 @@ package com.analab.pdfbiosign;
 import android.content.Context;
 import android.graphics.RectF;
 import android.util.Log;
+import android.view.*;
+import android.view.View.OnLongClickListener;
+import android.view.View.OnTouchListener;
 
 import com.artifex.mupdfdemo.MuPDFCore;
-import com.artifex.mupdfdemo.TextWord;
+import com.artifex.mupdfdemo.MuPDFPageView;
 
 public class Utility {
 	private MuPDFCore mCore;
@@ -53,5 +56,24 @@ public class Utility {
 			}
 		}
 		return ret;
+	}
+
+	public static void setListeners(MuPDFPageView pageView) {
+		pageView.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				((MuPDFPageView) v).canvas.mX = event.getX();
+				((MuPDFPageView) v).canvas.mY = event.getY();
+				return false;
+			}
+		});
+		
+		pageView.setOnLongClickListener(new OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				// TODO: convert
+				return true;
+			}
+		});
 	}
 }

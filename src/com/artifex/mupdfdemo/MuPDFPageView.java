@@ -2,6 +2,7 @@ package com.artifex.mupdfdemo;
 
 import java.util.ArrayList;
 
+import com.analab.pdfbiosign.PointC;
 import com.analab.pdfbiosign.R;
 
 import android.annotation.SuppressLint;
@@ -112,6 +113,7 @@ public class MuPDFPageView extends PageView implements MuPDFView {
 	private AsyncTask<Void,Void,String> mCheckSignature;
 	private AsyncTask<Void,Void,Boolean> mSign;
 	private Runnable changeReporter;
+	public PointC canvas;
 
 	public MuPDFPageView(Context c, FilePicker.FilePickerSupport filePickerSupport, MuPDFCore core, Point parentSize, Bitmap sharedHqBm) {
 		super(c, parentSize, sharedHqBm);
