@@ -150,8 +150,10 @@ public class MainActivity extends Activity {
 	public void signDocument() throws NoSuchAlgorithmException {
 		Log.d(TAG, "Signing document");
 		// final String RESOURCE = "/mnt/sdcard/sign.gif";
-		 final String RESOURCE = Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/sign.gif";
-		//final String RESOURCE = "/storage/sdcard0/external_SD/sign.gif";
+		// final String RESOURCE =
+		// Environment.getExternalStorageDirectory().getPath() + "/" +
+		// "Analab/sign.gif";
+		final String RESOURCE = "/storage/sdcard0/external_SD/sign.gif";
 
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 		keyGen.initialize(1024, new SecureRandom());
@@ -197,7 +199,7 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 			return true;
-		case R.id.open: {
+		case R.id.open: 
 			Intent intent2 = new Intent(Intent.ACTION_GET_CONTENT);
 
 			intent2.setType("*/*");
@@ -228,7 +230,7 @@ public class MainActivity extends Activity {
 						Toast.LENGTH_SHORT).show();
 			}
 			return true;
-		}
+		
 		case R.id.dialog: {
 
 			Intent intent = new Intent(this, SPenSignature.class);
@@ -253,8 +255,7 @@ public class MainActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		switch (requestCode) {
-		
-		case CHOOSE_FILE_REQUESTCODE: {
+		case CHOOSE_FILE_REQUESTCODE: 
 			if (resultCode == RESULT_OK) {
 				Uri uri = data.getData();
 				Log.d(TAG, "intent 2 " + uri.getPath());
@@ -263,10 +264,7 @@ public class MainActivity extends Activity {
 				
 			}
 			break;
-		}
-
-		case DIALOG_SIGN: {
-
+		case DIALOG_SIGN: 
 			if (resultCode == Activity.RESULT_OK) {
 
 				Bundle extras = data.getExtras();
@@ -307,7 +305,7 @@ public class MainActivity extends Activity {
 
 			}
 
-		}
+		
 		break;
 		}
 	}
