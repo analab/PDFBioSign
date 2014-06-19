@@ -97,6 +97,8 @@ public class MuPDFPageAdapter extends BaseAdapter {
 			}
 		});
 		
+		final MuPDFPageAdapter adp = this;
+		
 		pageView.setOnLongClickListener(new OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -115,10 +117,10 @@ public class MuPDFPageAdapter extends BaseAdapter {
 					e.printStackTrace();
 				}
 				
-				Intent intent = new Intent(pv.getContext(), SPenSignature.class);
+				Intent intent = new Intent(adp.mContext, SPenSignature.class);
 				intent.putExtra("path",pv.mCore.filename.substring(0, pv.mCore.filename.length()-4) + "_created.pdf");
 				intent.putExtra("name",name);
-				Activity act = (Activity) pv.getContext();
+				Activity act = (Activity) adp.mContext;
 				act.startActivityForResult(intent, MainActivity.DIALOG_SIGN_LONG);
 				return true;
 			}

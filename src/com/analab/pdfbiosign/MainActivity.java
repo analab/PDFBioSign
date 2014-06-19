@@ -122,7 +122,7 @@ public class MainActivity extends Activity {
 		ListView v = new ListView(this);
 
 		Log.d(TAG, "Setting adapter");
-		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
+		v.setAdapter(new MuPDFPageAdapter(this, null, mPdfCore));
 
 		Log.d(TAG, "Creating utility");
 		Utility u = new Utility(mPdfCore);
