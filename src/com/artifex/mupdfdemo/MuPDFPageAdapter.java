@@ -77,7 +77,7 @@ public class MuPDFPageAdapter extends BaseAdapter {
 
 			sizingTask.execute((Void)null);
 		}
-		Utility.setListeners(pageView, pageView.mPageNumber, pageView.mCore.filename, (MainActivity)pageView.getContext());
+		Utility.setListeners(pageView, pageView.mPageNumber, pageView.mCore.filename, pageView.getContext());
 		return pageView;
 	}
 }
