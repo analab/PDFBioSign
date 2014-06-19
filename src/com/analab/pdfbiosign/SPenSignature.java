@@ -68,10 +68,13 @@ public class SPenSignature extends Activity {
 
 	private ArrayList<ArrayList<TabletPoint>> traceCollection = null;
 	private ArrayList<TabletPoint> currentTrace = null;
+	private Bundle extras;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		extras = getIntent().getExtras();
 
 		mContext = this;
 		setContentView(R.layout.spen_signdoc);
@@ -208,6 +211,14 @@ public class SPenSignature extends Activity {
 		byte[] signatureBiometrics = traceCollection.toString().getBytes();
 		
 		intent.putExtra("sig", signatureBiometrics); 
+		if (extras != null) {
+			String name = extras.getString("name");
+			String path = extras.getString("path");
+			if (name != null)
+				intent.putExtra("name", name);
+			if (path != null)
+				intent.putExtra("path", path);
+		}
 		setResult(RESULT_OK, intent);
 		finish();
 	}
