@@ -7,9 +7,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 
+import android.annotation.TargetApi;
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.*;
@@ -20,10 +25,14 @@ import com.artifex.mupdfdemo.*;
 import com.itextpdf.text.Image;
 
 public class MainActivity extends Activity {
+	private static final int FILE_CHOOSER = 11;
+	private static final int ACTIVITY_CHOOSE_FILE = 88;
+	private static final int CHOOSE_FILE_REQUESTCODE = 0;
 	private final String TAG ="PDFBioSign";
 	private String mPath;
 	private MuPDFCore mPdfCore;
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,12 +57,23 @@ public class MainActivity extends Activity {
 		
 		Log.d(TAG, "Opening file");
 		
+		/*
+		Intent chooseFile;
+		Intent intent2;
+		chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+		chooseFile.setType("file/*");
+		intent2 = Intent.createChooser(chooseFile, "Choose a file");
+		startActivityForResult(intent2, ACTIVITY_CHOOSE_FILE);
+		*/
+		
+		
+		
 		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.pdf_file);
 		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + "Analab/AcroMaker.pdf";
-		mPath = Environment.getExternalStorageDirectory().getPath() + "/" + "external_SD/AcroMaker.pdf";
+		//mPath = Environment.getExternalStorageDirectory().getPath() + "/" + "external_SD/AcroMaker.pdf";
 		//mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
 		
-		mPdfCore = openFile(mPath);
+		/*mPdfCore = openFile(mPath);
 		
 		
 		Log.d(TAG, "Creating view");
@@ -71,10 +91,13 @@ public class MainActivity extends Activity {
 		String[] s = new String[1];
 		s[0] = "{PDFBioSign:sign:mysign}";
 		u.search(s);
+		 
+		
 		
 		//setContentView(R.layout.activity_main);
 		setContentView(v);
 
+*/
 		
 		//setContentView(new MuPDFPageView(getBaseContext(), null, mPdfCore, new Point(0,0), ));
 		/*
@@ -84,7 +107,32 @@ public class MainActivity extends Activity {
 		intent2.setData(uri2);
 		startActivity(intent2);*/
 	}
-	
+	private void showPdf(String path){
+		
+		mPdfCore = openFile(path);
+		
+		
+		Log.d(TAG, "Creating view");
+		
+		//View v = new PDFBioSignView(getBaseContext(), mPdfCore);
+		//ListView v = (ListView) getLayoutInflater().inflate(R.id.listView1, null);
+		//ListView v = (ListView) findViewById(R.id.listView1);
+		ListView v = new ListView(this);
+		
+		Log.d(TAG, "Setting adapter");
+		v.setAdapter(new MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
+		
+		Log.d(TAG, "Creating utility");
+		Utility u = new Utility(mPdfCore);
+		String[] s = new String[1];
+		s[0] = "{PDFBioSign:sign:mysign}";
+		u.search(s);
+		 
+		
+		
+		//setContentView(R.layout.activity_main);
+		setContentView(v);
+	}
 	private MuPDFCore openFile(String path) {
 		
 		if (BuildConfig.DEBUG) {
@@ -147,10 +195,65 @@ public class MainActivity extends Activity {
 				e.printStackTrace();
 			}
 	            return true;
+	        case R.id.open:
+	        {
+	        	Intent intent2 = new Intent(Intent.ACTION_GET_CONTENT);
+	    		
+	            intent2.setType("*/*");
+	            intent2.addCategory(Intent.CATEGORY_OPENABLE);
+
+	            // special intent for Samsung file manager
+	            Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
+	             // if you want any file type, you can skip next line 
+	            sIntent.putExtra("CONTENT_TYPE", "file/*"); 
+	            sIntent.addCategory(Intent.CATEGORY_DEFAULT);
+
+	            Intent chooserIntent;
+	            if (getPackageManager().resolveActivity(sIntent, 0) != null){
+	                // it is device with samsung file manager
+	                chooserIntent = Intent.createChooser(sIntent, "Open file");
+	                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[] { intent2});
+	            }
+	            else {
+	                chooserIntent = Intent.createChooser(intent2, "Open file");
+	            }
+	            Log.d(TAG, "Intent2 action: " + intent2.getAction());
+	    		Log.d(TAG, "Intent data: " + intent2.getData());
+	            try {
+	                startActivityForResult(chooserIntent, CHOOSE_FILE_REQUESTCODE);
+	            } catch (android.content.ActivityNotFoundException ex) {
+	                Toast.makeText(getApplicationContext(), "No suitable File Manager was found.", Toast.LENGTH_SHORT).show();
+	            }
+	          
+	    		
+	        }
 	        default:
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch(requestCode) {
+		case ACTIVITY_CHOOSE_FILE: {
+			if (resultCode == RESULT_OK){
+				Uri uri = data.getData();
+				Log.d(TAG, "intent 1 "+uri.getPath());
+				String mPath = uri.getPath();
+				showPdf(mPath);
+				}
+			}
+		case CHOOSE_FILE_REQUESTCODE:{
+			if (resultCode == RESULT_OK){
+				Uri uri = data.getData();
+				Log.d(TAG, "intent 2 "+uri.getPath());
+				String mPath = uri.getPath();
+				showPdf(mPath);
+				}
+			}
+		
+		}
+    		
+    }
 }
 
 /*class PDFBioSignView extends View {
