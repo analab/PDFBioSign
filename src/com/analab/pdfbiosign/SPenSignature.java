@@ -210,7 +210,7 @@ public class SPenSignature extends Activity {
        //FIXME: This is not STANDARD biometric binary format
 		byte[] signatureBiometrics = traceCollection.toString().getBytes();
 		
-		intent.putExtra("sig", signatureBiometrics); 
+		intent.putExtra("sig", signatureBiometrics);  
 		if (extras != null) {
 			String name = extras.getString("name");
 			String path = extras.getString("path");

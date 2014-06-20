@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
@@ -104,9 +105,18 @@ public class MuPDFPageAdapter extends BaseAdapter {
 			public boolean onLongClick(View v) {
 				// TODO: convert
 				MuPDFPageView pv = (MuPDFPageView)v;
+				
 				float scale = pv.mSourceScale * (float)pv.getWidth()/(float)pv.mSize.x;
-				final float docRelX = (pv.canvas.mX - pv.getLeft())/(2*scale);
-				final float docRelY = (pv.canvas.mY - pv.getTop())/(2*scale);
+				Log.d("pv source",pv.mSourceScale+"");
+				Log.d("pv.getWidth()",pv.getWidth()+"");
+				Log.d("pv.getHeight()",pv.getHeight()+"");
+				Log.d("pv.canvas.mX",pv.canvas.mX+"");
+				Log.d("pv.canvas.mY",pv.canvas.mY+"");
+				Log.d("pv.getLeft()",pv.getLeft()+"");
+				Log.d("pv.gettop()",pv.getTop()+"");
+				Log.d("scale",scale+"");
+				final float docRelX = (pv.getWidth()/(scale)/2 +(pv.canvas.mX - pv.getLeft())/(scale) )/2;
+				final float docRelY = (pv.getHeight() -(pv.canvas.mY - pv.getTop())/(scale))/2;
 				String name;
 				name="sign"+docRelX+""+docRelY;
 				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":"+(pv.mPageNumber+1)}; 
