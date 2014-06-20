@@ -119,6 +119,7 @@ public class MainActivity extends Activity {
 		// ListView v = (ListView) getLayoutInflater().inflate(R.id.listView1,
 		// null);
 		// ListView v = (ListView) findViewById(R.id.listView1);
+		RelativeLayout l = new RelativeLayout(this);
 		ListView v = new ListView(this);
 
 		Log.d(TAG, "Setting adapter");
@@ -131,7 +132,8 @@ public class MainActivity extends Activity {
 		u.search(s);
 
 		// setContentView(R.layout.activity_main);
-		setContentView(v);
+		l.addView(v);
+		setContentView(l);
 	}
 
 	private MuPDFCore openFile(String path) {
