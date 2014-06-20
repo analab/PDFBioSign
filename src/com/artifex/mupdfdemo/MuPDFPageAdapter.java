@@ -89,14 +89,14 @@ public class MuPDFPageAdapter extends BaseAdapter {
 			sizingTask.execute((Void)null);
 		}
 		
-		pageView.setOnTouchListener(new OnTouchListener() {
+		/*pageView.setOnTouchListener(new OnTouchListener() {
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				((MuPDFPageView) v).canvas.mX = event.getX();
 				((MuPDFPageView) v).canvas.mY = event.getY();
 				return false;
 			}
-		});
+		});*/
 		
 		final MuPDFPageAdapter adp = this;
 		
