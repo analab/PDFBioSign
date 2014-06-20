@@ -47,65 +47,37 @@ public class MainActivity extends Activity {
 		Log.d(TAG, "Intent action: " + intent.getAction());
 		Log.d(TAG, "Intent data: " + intent.getData());
 
-		/*
-		 * Uri uri = intent.getData(); if (uri == null) {
-		 * Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/" +
-		 * getString(R.string.pdf_file)); } if
-		 * (uri.toString().startsWith("content://media/external/file")) { Cursor
-		 * cursor = getContentResolver().query(uri, new String[] { "_data" },
-		 * null, null, null); if (cursor.moveToFirst()) { uri =
-		 * Uri.parse(cursor.getString(0)); } }
-		 */
-
 		Log.d(TAG, "Opening file");
 
-		/*
-		 * Intent chooseFile; Intent intent2; chooseFile = new
-		 * Intent(Intent.ACTION_GET_CONTENT); chooseFile.setType("file/*");
-		 * intent2 = Intent.createChooser(chooseFile, "Choose a file");
-		 * startActivityForResult(intent2, ACTIVITY_CHOOSE_FILE);
-		 */
+		Intent intent2 = new Intent(Intent.ACTION_GET_CONTENT);
 
-		// mPath = Environment.getExternalStorageDirectory().getPath() + "/" +
-		// getString(R.string.pdf_file);
-		// mPath = Environment.getExternalStorageDirectory().getPath() + "/" +
-		// "Analab/AcroMaker.pdf";
-		// mPath = Environment.getExternalStorageDirectory().getPath() + "/" +
-		// "external_SD/AcroMaker.pdf";
-		// mPath = "/storage/sdcard0/external_SD/AcroMaker.pdf";
+		intent2.setType("*/*");
+		intent2.addCategory(Intent.CATEGORY_OPENABLE);
 
-		/*
-		 * mPdfCore = openFile(mPath);
-		 * 
-		 * 
-		 * Log.d(TAG, "Creating view");
-		 * 
-		 * //View v = new PDFBioSignView(getBaseContext(), mPdfCore); //ListView
-		 * v = (ListView) getLayoutInflater().inflate(R.id.listView1, null);
-		 * //ListView v = (ListView) findViewById(R.id.listView1); ListView v =
-		 * new ListView(this);
-		 * 
-		 * Log.d(TAG, "Setting adapter"); v.setAdapter(new
-		 * MuPDFPageAdapter(getBaseContext(), null, mPdfCore));
-		 * 
-		 * Log.d(TAG, "Creating utility"); Utility u = new Utility(mPdfCore);
-		 * String[] s = new String[1]; s[0] = "{PDFBioSign:sign:mysign}";
-		 * u.search(s);
-		 * 
-		 * 
-		 * 
-		 * //setContentView(R.layout.activity_main); setContentView(v);
-		 */
+		// special intent for Samsung file manager
+		Intent sIntent = new Intent("com.sec.android.app.myfiles.PICK_DATA");
+		// if you want any file type, you can skip next line
+		sIntent.putExtra("CONTENT_TYPE", "file/*");
+		sIntent.addCategory(Intent.CATEGORY_DEFAULT);
 
-		// setContentView(new MuPDFPageView(getBaseContext(), null, mPdfCore,
-		// new Point(0,0), ));
-		/*
-		 * Uri uri2 =
-		 * Uri.parse(Environment.getExternalStorageDirectory().getPath() + "/" +
-		 * getString(R.string.pdf_file)); Intent intent2 = new Intent(this,
-		 * MuPDFActivity.class); intent2.setAction(Intent.ACTION_VIEW);
-		 * intent2.setData(uri2); startActivity(intent2);
-		 */
+		Intent chooserIntent;
+		if (getPackageManager().resolveActivity(sIntent, 0) != null) {
+			// it is device with samsung file manager
+			chooserIntent = Intent.createChooser(sIntent, "Open file");
+			chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS,
+					new Intent[] { intent2 });
+		} else {
+			chooserIntent = Intent.createChooser(intent2, "Open file");
+		}
+		Log.d(TAG, "Intent2 action: " + intent2.getAction());
+		Log.d(TAG, "Intent data: " + intent2.getData());
+		try {
+			startActivityForResult(chooserIntent, CHOOSE_FILE_REQUESTCODE);
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"No suitable File Manager was found.",
+					Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	private void showPdf(String path) {
