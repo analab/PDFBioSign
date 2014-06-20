@@ -30,8 +30,8 @@ public class ReaderView
 	private static final int  FLING_MARGIN      = 100;
 	private static final int  GAP               = 20;
 
-	private static final float MIN_SCALE        = 1.0f;
-	private static final float MAX_SCALE        = 5.0f;
+	private static float MIN_SCALE        = 1.0f;
+	private static float MAX_SCALE        = 5.0f;
 	private static final float REFLOW_SCALE_FACTOR = 0.5f;
 
 	private Adapter           mAdapter;
@@ -719,8 +719,15 @@ public class ReaderView
 
 		if (!mReflow) {
 		// Work out a scale that will fit it to this view
-		float scale = Math.min((float)getWidth()/(float)v.getMeasuredWidth(),
+		float scale;
+		if (getWidth() > getHeight()) {
+			scale = (float)getWidth()/(float)v.getMeasuredWidth();
+			MIN_SCALE = (float)v.getMeasuredWidth()/(float)getWidth();
+			MAX_SCALE = 5.0f * MIN_SCALE;
+		} else {
+			scale = Math.min((float)getWidth()/(float)v.getMeasuredWidth(),
 					(float)getHeight()/(float)v.getMeasuredHeight());
+		}
 		// Use the fitting values scaled by our current scale factor
 		v.measure(View.MeasureSpec.EXACTLY | (int)(v.getMeasuredWidth()*scale*mScale),
 				View.MeasureSpec.EXACTLY | (int)(v.getMeasuredHeight()*scale*mScale));
