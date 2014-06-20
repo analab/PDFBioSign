@@ -720,14 +720,14 @@ public class ReaderView
 		if (!mReflow) {
 		// Work out a scale that will fit it to this view
 		float scale;
-		if (getWidth() > getHeight()) {
+		//if (getWidth() > getHeight()) {
 			scale = (float)getWidth()/(float)v.getMeasuredWidth();
 			MIN_SCALE = (float)v.getMeasuredWidth()/(float)getWidth();
 			MAX_SCALE = 5.0f * MIN_SCALE;
-		} else {
+		/*} else {
 			scale = Math.min((float)getWidth()/(float)v.getMeasuredWidth(),
 					(float)getHeight()/(float)v.getMeasuredHeight());
-		}
+		}*/
 		// Use the fitting values scaled by our current scale factor
 		v.measure(View.MeasureSpec.EXACTLY | (int)(v.getMeasuredWidth()*scale*mScale),
 				View.MeasureSpec.EXACTLY | (int)(v.getMeasuredHeight()*scale*mScale));

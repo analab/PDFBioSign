@@ -161,6 +161,9 @@ public class MuPDFReaderView extends ReaderView {
 		{
 			tapDisabled = false;
 		}
+		
+		((MuPDFPageView) getDisplayedView()).canvas.mX = event.getX();
+		((MuPDFPageView) getDisplayedView()).canvas.mY = event.getY();
 
 		return super.onTouchEvent(event);
 	}
