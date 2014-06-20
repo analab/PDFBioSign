@@ -721,8 +721,8 @@ public class ReaderView
 		// Work out a scale that will fit it to this view
 		float scale;
 		if (getWidth() > getHeight()) {
-			scale = ((float)getWidth() - 30)/(float)v.getMeasuredWidth();
-			MIN_SCALE = ((float)v.getMeasuredWidth() - 30)/(float)getWidth();
+			scale = ((float)getWidth() - 100)/(float)v.getMeasuredWidth();
+			MIN_SCALE = ((float)v.getMeasuredWidth() - 100)/(float)getWidth();
 			MAX_SCALE = 5.0f * MIN_SCALE;
 		} else {
 			scale = Math.min((float)getWidth()/(float)v.getMeasuredWidth(),
