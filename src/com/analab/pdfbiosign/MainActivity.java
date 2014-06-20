@@ -121,6 +121,7 @@ public class MainActivity extends Activity {
 		// ListView v = (ListView) findViewById(R.id.listView1);
 		RelativeLayout l = new RelativeLayout(this);
 		MuPDFReaderView v = new MuPDFReaderView(this);
+		// ListView v = new ListView(this);
 
 		Log.d(TAG, "Setting adapter");
 		v.setAdapter(new MuPDFPageAdapter(this, null, mPdfCore));
