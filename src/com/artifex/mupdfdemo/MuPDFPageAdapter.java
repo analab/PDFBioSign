@@ -106,7 +106,7 @@ public class MuPDFPageAdapter extends BaseAdapter {
 				MuPDFPageView pv = (MuPDFPageView)v;
 				float scale = pv.mSourceScale * (float)pv.getWidth()/(float)pv.mSize.x;
 				final float docRelX = (pv.canvas.mX - pv.getLeft())/(2*scale);
-				final float docRelY = pv.getHeight() - (pv.canvas.mY - pv.getTop())/(2*scale);
+				final float docRelY = (pv.canvas.mY - pv.getTop())/(2*scale);
 				String name;
 				name="sign"+docRelX+""+docRelY;
 				String[] mTMP={docRelX+":"+docRelY+":sign:"+name+":"+(pv.mPageNumber+1)}; 
